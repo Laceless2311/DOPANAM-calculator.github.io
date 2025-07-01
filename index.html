@@ -1,0 +1,182 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="ko">\
+<head>\
+  <meta charset="UTF-8" />\
+  <title>\uc0\u46020 \u54028 \u45224 \u51032  \u44396 \u47588 \u45824 \u54665  \u44204 \u51201  \u44228 \u49328 \u44592 </title>\
+  <style>\
+    body \{ font-family: sans-serif; padding: 20px; background: #f0f2f5; \}\
+    .container \{ max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; \}\
+    .item-box \{ border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; position: relative; background: #fafafa; border-radius: 8px; \}\
+    .item-box button \{ position: absolute; top: 8px; right: 8px; border: none; background: transparent; font-weight: bold; font-size: 16px; cursor: pointer; \}\
+    label \{ font-weight: bold; display: block; margin-top: 10px; \}\
+    select, input \{ width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; \}\
+    .btn \{ margin-top: 10px; padding: 10px; width: 100%; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; \}\
+    .add-item \{ background: #28a745; color: #fff; \}\
+    .calc \{ background: #007bff; color: #fff; \}\
+    .gray-note \{ color: gray; font-size: 13px; margin-top: 8px; \}\
+    .red-note \{ color: crimson; margin-top: 8px; font-size: 14px; \}\
+    .result \{ margin-top: 20px; background: #f5f5f5; padding: 15px; border-radius: 8px; line-height: 1.6; \}\
+  </style>\
+</head>\
+<body>\
+  <div class="container">\
+    <h2>\uc0\u46020 \u54028 \u45224 \u51032  \u44396 \u47588 \u45824 \u54665  \u44204 \u51201  \u44228 \u49328 \u44592 </h2>\
+\
+    <label>\uc0\u45824 \u54665  \u49436 \u48708 \u49828  \u51333 \u47448 </label>\
+    <select id="service">\
+      <option value="offline">\uc0\u50724 \u54532 \u46972 \u51064  \u44396 \u47588 \u45824 \u54665 </option>\
+      <option value="online">\uc0\u50728 \u46972 \u51064  \u44396 \u47588 \u45824 \u54665 </option>\
+      <option value="delivery">\uc0\u48176 \u45824 \u51648 \u51060 \u50857 </option>\
+      <option value="pickup">\uc0\u51216 \u54252 \u49688 \u47161 +\u48176 \u49569 \u45824 \u54665 </option>\
+    </select>\
+\
+    <label>\uc0\u54872 \u50984  (1\u50644  = ?\u50896 )</label>\
+    <input type="number" id="rate" placeholder="\uc0\u50696 : 9.2" />\
+    <div class="gray-note">\uc0\u54872 \u50984 \u51008  \u54872 \u51204 ,\u50808 \u54868 \u49688 \u49688 \u47308 \u47484  \u54252 \u54632 \u54616 \u50668  \u44228 \u49328  \u46121 \u45768 \u45796 .</div>\
+\
+    <div id="items"></div>\
+    <button class="btn add-item" onclick="addItem()">\uc0\u49345 \u54408  \u52628 \u44032 </button>\
+    <button class="btn calc" onclick="calculate()">\uc0\u44204 \u51201  \u44228 \u49328 \u54616 \u44592 </button>\
+\
+    <div class="gray-note">\uc0\u51060  \u44228 \u49328 \u44592 \u51032  \u44050 \u51008  \u51076 \u51032 \u47196  \u44228 \u49328 \u46104 \u45716  \u44050 \u51060 \u48064 \u47196 , \u49892  \u44396 \u47588 \u45824 \u54665 \u49884 \u51032  \u49345 \u54408 \u45824 \u44552 , \u44368 \u53685 \u48708 , \u54872 \u50984 , \u48176 \u49569 \u50836 \u52397 \u50640  \u46384 \u46972  \u45796 \u49548  \u48320 \u44221 \u46112  \u49688  \u51080 \u49845 \u45768 \u45796 .</div>\
+    <div class="result" id="result"></div>\
+  </div>\
+\
+  <!-- JavaScript \uc0\u53076 \u46300  \u49884 \u51089  -->\
+  <script>\
+    let index = 0;\
+\
+    const feeTable = \{\
+      offline: [[3000, 0.25], [10000, 0.23], [30000, 0.21], [50000, 0.17], [100000, 0.15], [Infinity, 0.12]],\
+      online: [[3000, 0.15], [10000, 0.13], [30000, 0.11], [50000, 0.09], [100000, 0.07], [Infinity, 0.05]],\
+    \};\
+\
+    const shippingRates = [\
+      [500, 1200],[600,1310],[700,1420],[800,1530],[900,1640],[1000,1750],[1250,1960],\
+      [1500,2170],[1750,2380],[2000,2590],[2500,2940],[3000,3290],[3500,3640],[4000,3990],\
+      [4500,4310],[5000,4590],[5500,4870],[6000,5150],[7000,5550],[8000,5950],[9000,6300],\
+      [10000,6650],[11000,7000],[12000,7350],[13000,7700],[14000,8050],[15000,8400],\
+      [16000,8750],[17000,9100],[18000,9450],[19000,9800],[20000,10150]\
+    ];\
+\
+    function addItem() \{\
+      const itemsContainer = document.getElementById('items');\
+      if (!itemsContainer) return;\
+\
+      const box = document.createElement('div');\
+      box.className = 'item-box';\
+      box.id = `item-$\{index\}`;\
+      box.innerHTML = `\
+        <button onclick="removeItem($\{index\})">&times;</button>\
+        <label>\uc0\u49345 \u54408 \u44032  (\u50644 \u54868 )</label><input type="number" id="price-$\{index\}">\
+        <label>\uc0\u50696 \u49345  \u47924 \u44172  (g)</label><input type="number" id="weight-$\{index\}">\
+      `;\
+      itemsContainer.appendChild(box);\
+      index++;\
+    \}\
+\
+    function removeItem(i) \{\
+      const box = document.getElementById(`item-$\{i\}`);\
+      if (box) box.remove();\
+    \}\
+\
+    function getProgressiveFee(type, total) \{\
+      let fee = 0, prev = 0;\
+      for (const [limit, rate] of feeTable[type]) \{\
+        if (total > prev) \{\
+          const amt = Math.min(limit - prev, total - prev);\
+          fee += amt * rate;\
+          prev = limit;\
+        \}\
+      \}\
+      return fee;\
+    \}\
+\
+    function getShippingFee(weight) \{\
+      for (const [limit, fee] of shippingRates) \{\
+        if (weight <= limit) return fee;\
+      \}\
+      return 10150;\
+    \}\
+\
+    function round(n) \{\
+      return Math.round(n / 10) * 10;\
+    \}\
+\
+    function calculate() \{\
+      const service = document.getElementById('service').value;\
+      let rate = parseFloat(document.getElementById('rate').value) || 0;\
+      rate += 0.3;\
+\
+      const prices = [], weights = [];\
+      document.querySelectorAll('[id^=price-]').forEach(el => \{\
+        const val = +el.value;\
+        if (val) prices.push(val);\
+      \});\
+      document.querySelectorAll('[id^=weight-]').forEach(el => \{\
+        const val = +el.value;\
+        if (val) weights.push(val);\
+      \});\
+\
+      const sumPrice = prices.reduce((a,b) => a+b, 0);\
+      const sumWeight = weights.reduce((a,b) => a+b, 0);\
+      const fee = (service === 'delivery' || service === 'pickup') ? 0 : getProgressiveFee(service, sumPrice);\
+\
+      let extraFee = 0;\
+      if (service === 'offline') extraFee = prices.length > 1 ? (prices.length - 1) * 200 : 0;\
+      if (service === 'online')  extraFee = prices.length > 0 ? (prices.length) * 100 : 0;\
+\
+      const shippingYen = getShippingFee(sumWeight);\
+\
+      let first = 0, second = 0, notes = '';\
+\
+      if (service === 'offline') \{\
+        first = (sumPrice + fee + extraFee + 500) * rate;\
+        second = shippingYen * rate;\
+        notes += `<div class='red-note'>\uc0\u49345 \u54408 \u48708 \u50640 \u45716  \u49892 \u51228  \u51216 \u54252 \u50640 \u49436  \u44396 \u47588 \u47484  \u50948 \u54620 , \u51064 \u44148 \u48708 ,\u44368 \u53685 \u48708 \u44032  \u45824 \u54665 \u48708 \u47196 \u50024  \u54252 \u54632 \u46104 \u50612  \u51080 \u49845 \u45768 \u45796 .</div>`;\
+        notes += `<div class='gray-note'>\uc0\u44368 \u53685 \u48708 \u45716  \u51076 \u51032 \u47196  500\u50644 \u51004 \u47196  \u44228 \u49328 \u54664 \u49845 \u45768 \u45796 .</div>`;\
+        notes = `<strong>1\uc0\u52264  \u49345 \u54408 \u48708 :</strong> $\{round(first).toLocaleString()\}\u50896 <br>\
+                 <strong>2\uc0\u52264  \u48176 \u49569 \u48708 (\u50696 \u49345 ):</strong> $\{round(second).toLocaleString()\}\u50896 ` + notes;\
+      \} else if (service === 'online') \{\
+        first = (sumPrice + fee + extraFee) * rate;\
+        second = shippingYen * rate;\
+        notes = `<strong>1\uc0\u52264  \u49345 \u54408 \u48708 :</strong> $\{round(first).toLocaleString()\}\u50896 <br>\
+                 <strong>2\uc0\u52264  \u48176 \u49569 \u48708 (\u50696 \u49345 ):</strong> $\{round(second).toLocaleString()\}\u50896 `;\
+      \} else if (service === 'pickup') \{\
+        first = 1800 * rate;\
+        second = shippingYen * rate;\
+        notes = `<strong>1\uc0\u52264  \u49688 \u47161 \u48708 :</strong> $\{round(first).toLocaleString()\}\u50896 \
+                 <div class='red-note'>\uc0\u51076 \u51032 \u47196  \u49884 \u44553  1300\u50644  1\u49884 \u44036  + \u44368 \u53685 \u48708  500\u50644 \u51004 \u47196  \u44228 \u49328 \u54616 \u50688 \u49845 \u45768 \u45796 .</div>\
+                 <strong>2\uc0\u52264  \u50696 \u49345  \u48176 \u49569 \u48708 :</strong> $\{round(second).toLocaleString()\}\u50896 `;\
+      \} else if (service === 'delivery') \{\
+        first = (150 + prices.length * 100) * rate;\
+        second = shippingYen * rate;\
+        notes = `<strong>\uc0\u48176 \u45824 \u51648  \u51060 \u50857 \u48708 :</strong> $\{round(first).toLocaleString()\}\u50896 <br>\
+                 <strong>2\uc0\u52264  \u48176 \u49569 \u48708 :</strong> $\{round(second).toLocaleString()\}\u50896 \
+                 <div class='gray-note'>(\uc0\u44592 \u48376 \u47308 150\u50644  + \u49888 \u52397  \u49345 \u54408 \u44079 \u49688  \u45817  100\u50644  </div>`;\
+      \}\
+\
+      const res = `\
+        $\{notes\}\
+        <div class='gray-note'>\uc0\u49345 \u54408 \u44032 \u44201 \u51060  USD150\u45804 \u47084 \u47484  \u52488 \u44284 \u54616 \u45716  \u48176 \u49569 \u51032  \u44221 \u50864  \u44288 \u49464 \u44032  \u52628 \u44032 \u47196  \u48156 \u49373 \u54624  \u49688  \u51080 \u49845 \u45768 \u45796 .</div>\
+        $\{sumPrice > 20000 ? `<div class='gray-note'>\uc0\u44288 \u49464 \u52983 \u50857  \u48516 \u54624  \u48176 \u49569 \u50836 \u52397 \u49884  \u54252 \u51109 \u48708 \u44032  \u52628 \u44032 \u47196  \u48156 \u49373 \u54624  \u49688  \u51080 \u49845 \u45768 \u45796 .</div>` : ''\}\
+        <br><br><a href="https://pidamarket.com/" target="_blank">\
+          <button class="btn calc">\uc0\u44396 \u47588 \u45824 \u54665  \u49888 \u52397 \u54616 \u47084  \u44032 \u44592 </button>\
+        </a>\
+      `;\
+      document.getElementById('result').innerHTML = res;\
+    \}\
+\
+    window.addEventListener('DOMContentLoaded', () => \{\
+      addItem();\
+    \});\
+  </script>\
+</body>\
+</html>}
