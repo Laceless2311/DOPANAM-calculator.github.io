@@ -65,18 +65,18 @@
 
       const box = document.createElement('div');
       box.className = 'item-box';
-      box.id = item-${index};
-      box.innerHTML = 
+      box.id = `item-${index}`;
+      box.innerHTML = `
         <button onclick="removeItem(${index})">&times;</button>
         <label>상품가 (엔화)</label><input type="number" id="price-${index}">
         <label>예상 무게 (g)</label><input type="number" id="weight-${index}">
-      ;
+      `;
       itemsContainer.appendChild(box);
       index++;
     }
 
     function removeItem(i) {
-      const box = document.getElementById(item-${i});
+      const box = document.getElementById(`item-${i}`);
       if (box) box.remove();
     }
 
@@ -133,37 +133,37 @@
       if (service === 'offline') {
         first = (sumPrice + fee + extraFee + 500) * rate;
         second = shippingYen * rate;
-        notes += <div class='red-note'>상품비에는 실제 점포에서 구매를 위한, 인건비,교통비가 대행비로써 포함되어 있습니다.</div>;
-        notes += <div class='gray-note'>교통비는 임의로 500엔으로 계산했습니다.</div>;
-        notes = <strong>1차 상품비:</strong> ${round(first).toLocaleString()}원<br>
-                 <strong>2차 배송비(예상):</strong> ${round(second).toLocaleString()}원 + notes;
+        notes += `<div class='red-note'>상품비에는 실제 점포에서 구매를 위한, 인건비,교통비가 대행비로써 포함되어 있습니다.</div>`;
+        notes += `<div class='gray-note'>교통비는 임의로 500엔으로 계산했습니다.</div>`;
+        notes = `<strong>1차 상품비:</strong> ${round(first).toLocaleString()}원<br>
+                 <strong>2차 배송비(예상):</strong> ${round(second).toLocaleString()}원` + notes;
       } else if (service === 'online') {
         first = (sumPrice + fee + extraFee) * rate;
         second = shippingYen * rate;
-        notes = <strong>1차 상품비:</strong> ${round(first).toLocaleString()}원<br>
-                 <strong>2차 배송비(예상):</strong> ${round(second).toLocaleString()}원;
+        notes = `<strong>1차 상품비:</strong> ${round(first).toLocaleString()}원<br>
+                 <strong>2차 배송비(예상):</strong> ${round(second).toLocaleString()}원`;
       } else if (service === 'pickup') {
         first = 1800 * rate;
         second = shippingYen * rate;
-        notes = <strong>1차 수령비:</strong> ${round(first).toLocaleString()}원
+        notes = `<strong>1차 수령비:</strong> ${round(first).toLocaleString()}원
                  <div class='red-note'>임의로 시급 1300엔 1시간 + 교통비 500엔으로 계산하였습니다.</div>
-                 <strong>2차 예상 배송비:</strong> ${round(second).toLocaleString()}원;
+                 <strong>2차 예상 배송비:</strong> ${round(second).toLocaleString()}원`;
       } else if (service === 'delivery') {
         first = (150 + prices.length * 100) * rate;
         second = shippingYen * rate;
-        notes = <strong>배대지 이용비:</strong> ${round(first).toLocaleString()}원<br>
+        notes = `<strong>배대지 이용비:</strong> ${round(first).toLocaleString()}원<br>
                  <strong>2차 배송비:</strong> ${round(second).toLocaleString()}원
-                 <div class='gray-note'>(기본료150엔 + 신청 상품갯수 당 100엔 + 무게별 배송비)*환율 </div>;
+                 <div class='gray-note'>(기본비150엔 + 신청 상품갯수 당 100엔 + 무게별 배송비)*환율 </div>`;
       }
 
-      const res = 
+      const res = `
         ${notes}
         <div class='gray-note'>상품가격이 USD150달러를 초과하는 배송의 경우 관세가 추가로 발생할 수 있습니다.</div>
-        ${sumPrice > 20000 ? <div class='gray-note'>관세컷용 분할 배송요청시 포장비가 추가로 발생할 수 있습니다.</div> : ''}
-        <br><br><a href="https://pidamarket.com/" target="_blank">
+        ${sumPrice > 20000 ? `<div class='gray-note'>관세컷용 분할 배송요청시 포장비가 추가로 발생할 수 있습니다.</div>` : ''}
+        <br><br><a href="https://m.bunjang.co.kr/shop/82542194/products" target="_blank">
           <button class="btn calc">구매대행 신청하러 가기</button>
         </a>
-      ;
+      `;
       document.getElementById('result').innerHTML = res;
     }
 
@@ -173,3 +173,4 @@
   </script>
 </body>
 </html>
+
